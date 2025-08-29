@@ -21,4 +21,5 @@ ron = "0.8.1"
 prost = { git = "https://github.com/koxx12-dev/prost.git", branch = "latest-stable" }
 clap = { version = "4.5.27", features = ["derive"] }
 anyhow = "1.0.95"
+unicode-bom = "2.0.3"
 

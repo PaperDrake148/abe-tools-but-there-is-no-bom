@@ -1,5 +1,6 @@
 use clap::{arg, Args, Subcommand};
 use epic_prefs::PlayerPrefsData;
+use unicode_bom::Bom;
 use std::path::PathBuf;
 use crate::DataFormat;
 
@@ -58,7 +59,16 @@ pub(super) fn encode_prefs(prefs_args: PrefsArgs, args: PrefsEncodeArgs) -> anyh
 }
 
 pub(super) fn decode_prefs(prefs_args: PrefsArgs, args: PrefsDecodeArgs) -> anyhow::Result<()> {
-    let xml_file = std::fs::read_to_string(prefs_args.player_prefs_path)?;
+    let mut xml_bytes = std::fs::read(&prefs_args.player_prefs_path)?;
+
+    let bom: Bom = unicode_bom::Bom::from(&xml_bytes[..]);
+    if bom != Bom::Null {
+        println!("Warning: File contains BOM: {:?}, attempting to remove...", bom);
+        xml_bytes = xml_bytes[3..].to_vec()
+        
+    }
+    
+    let xml_file = String::from_utf8(xml_bytes)?;
 
     let prefs = PlayerPrefsData::from_prefs_xml(xml_file.as_str())?;
 
